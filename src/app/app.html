@@ -1,0 +1,62 @@
+<div class="container">
+  <h1>Mini Equipo Pokémon</h1>
+
+  <form (ngSubmit)="buscar()" class="row">
+    <input type="text" [(ngModel)]="query" name="query" placeholder="Ej: pikachu o 25" />
+    <button type="submit">Buscar</button>
+  </form>
+
+  @if (loading()) {
+    <p>Cargando...</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (pokemon(); as p) {
+    <div class="card">
+      <img [src]="p.sprites.front_default" [alt]="p.name" />
+      <h2>#{{ p.id }} - {{ p.name }}</h2>
+
+      <div>
+        <strong>Tipos (clic para debilidades):</strong>
+        @for (t of p.types; track t.type.name) {
+          <button type="button" (click)="verDebilidades(t.type.name)">{{ t.type.name }}</button>
+        }
+      </div>
+
+      @if (weaknesses().length > 0) {
+        <p><strong>Débil contra:</strong> {{ weaknesses().join(', ') }}</p>
+      }
+
+      <div>
+        <strong>Habilidades (clic para efecto):</strong>
+        @for (a of p.abilities; track a.ability.name) {
+          <button type="button" (click)="verHabilidad(a.ability.name)">{{ a.ability.name }}</button>
+        }
+      </div>
+
+      @if (abilityInfo()) {
+        <p class="info">{{ abilityInfo() }}</p>
+      }
+
+      <button type="button" class="add" (click)="agregarAlEquipo()">Agregar al equipo ({{ team().length }}/6)</button>
+    </div>
+  }
+
+  <h3>Mi equipo</h3>
+  @if (team().length === 0) {
+    <p>Aún no agregas Pokémon.</p>
+  } @else {
+    <ul>
+      @for (item of team(); track item.id) {
+        <li>
+          <img [src]="item.sprites.front_default" width="36" />
+          {{ item.name }}
+          <button type="button" (click)="quitarDelEquipo(item.id)">Quitar</button>
+        </li>
+      }
+    </ul>
+  }
+</div>
